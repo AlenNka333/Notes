@@ -16,19 +16,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     companion object {
         var notes: ArrayList<Note> = ArrayList()
-        lateinit var database: SQLiteDatabase
+        lateinit var database: NotesDatabase
         lateinit var adapter: NotesAdapter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         recyclerView = findViewById(R.id.recyclerViewNotes)
         val dbHelper = NotesDBHelper(this)
-        database = dbHelper.writableDatabase
-        //database.delete(NotesContract.NotesEntry.TABLE_NAME, null, null)
+        database = NotesDatabase.getInstance(this)!!
+
         getData()
+
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = NotesAdapter(notes)
         recyclerView.adapter = adapter
@@ -51,10 +51,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun remove(position: Int) {
-        val id = notes.get(position).id
-        val where = "${NotesContract.NotesEntry._ID} = ?"
-        var whereArgs: Array<String> = arrayOf(id.toString())
-        database.delete(NotesContract.NotesEntry.TABLE_NAME, where, whereArgs)
+        val note = notes.get(position)
+        database.notesDao().deleteNote(note)
         getData()
         adapter.notifyDataSetChanged()
     }
@@ -66,16 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     fun getData(){
         notes.clear()
-        val cursor: Cursor = database.query(NotesContract.NotesEntry.TABLE_NAME, null, null, null, null, null, NotesContract.NotesEntry.COLUMN_DATE)
-        while (cursor.moveToNext()){
-            val id = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry._ID))
-            val title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE))
-            val description = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DESCRIPTION))
-            val date = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DATE))
-            val priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY))
-            val n = Note(id, title, description, date, priority)
-            notes.add(n)
-        }
-        cursor.close()
+        val notesDB = database.notesDao().getAllNotes()
+        notes.addAll(notesDB)
     }
 }

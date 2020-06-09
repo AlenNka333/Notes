@@ -12,15 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 
 class NotesAdapter(val notes: ArrayList<Note>): RecyclerView.Adapter<NotesAdapter.NotesHolder>() {
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesAdapter.NotesHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesHolder {
         val view: View = LayoutInflater.from(parent.getContext())
             .inflate(R.layout.item_notes, parent, false)
         return NotesHolder(view)
     }
 
     override fun getItemCount() = notes.size
-
 
     override fun onBindViewHolder(holder: NotesHolder, position: Int) {
         val note = notes[position]
