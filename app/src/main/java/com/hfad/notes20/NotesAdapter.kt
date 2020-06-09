@@ -24,7 +24,7 @@ class NotesAdapter(val notes: ArrayList<Note>): RecyclerView.Adapter<NotesAdapte
         val note = notes[position]
         holder.textViewTitle.setText(note.title)
         holder.textViewDescription.text = note.description
-        holder.textViewDayOfWeek.text = (note.day)
+        holder.textViewDayOfWeek.text = (note.date)
         holder.textViewTitle.setBackgroundColor(note.priority)
 
     }

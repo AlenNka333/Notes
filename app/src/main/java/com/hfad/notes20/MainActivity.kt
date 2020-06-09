@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerViewNotes)
-        val dbHelper = NotesDBHelper(this)
         database = NotesDatabase.getInstance(this)!!
 
         getData()
@@ -63,8 +62,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getData(){
-        notes.clear()
         val notesDB = database.notesDao().getAllNotes()
+        notes.clear()
         notes.addAll(notesDB)
     }
 }

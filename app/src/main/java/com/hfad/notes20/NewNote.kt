@@ -26,16 +26,14 @@ class NewNote : AppCompatActivity(), ColorPickerDialogListener{
     lateinit var switch: Switch
     lateinit var date: DatePicker
 
-    lateinit var dbHelper: NotesDBHelper
-    lateinit var sqLiteDatabase: SQLiteDatabase
+   lateinit var database: NotesDatabase
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_note)
 
-        dbHelper = NotesDBHelper(this)
-        sqLiteDatabase = dbHelper.writableDatabase
+        database = NotesDatabase.getInstance(this)!!
 
         button = findViewById(R.id.colorButton)
         title = findViewById(R.id.editTextTitle)
@@ -87,15 +85,14 @@ class NewNote : AppCompatActivity(), ColorPickerDialogListener{
             Toast.makeText(this, "All fields should be filled", Toast.LENGTH_SHORT).show()
         else {
             val intent = Intent(applicationContext, MainActivity::class.java)
-            val color = ((button.background as ColorDrawable)).color.toString()
+            val color = ((button.background as ColorDrawable)).color
+            val title = title.text.toString()
+            val description = note.text.toString()
+            val date = String.format("%s.%s.%s",date.dayOfMonth, date.month+1, date.year)
 
-            var contentValues = ContentValues()
-            contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, title.text.toString())
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, note.text.toString())
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DATE, String.format("%s.%s.%s",date.dayOfMonth, date.month+1, date.year))
-            contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, color)
+            val note = Note(title, description, date, color)
 
-            sqLiteDatabase.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues)
+            database.notesDao().insertNote(note)
 
             startActivity(intent)
         }
