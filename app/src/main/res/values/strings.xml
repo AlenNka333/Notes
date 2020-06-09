@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Notes 2.0</string>
+    <string name="edit_title">Title</string>
+    <string name="save">Save</string>
+</resources>
