@@ -10,12 +10,19 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-class NotesAdapter(val notes: ArrayList<Note>): RecyclerView.Adapter<NotesAdapter.NotesHolder>() {
+class NotesAdapter: RecyclerView.Adapter<NotesAdapter.NotesHolder>() {
+
+    private var notes: List<Note> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesHolder {
         val view: View = LayoutInflater.from(parent.getContext())
             .inflate(R.layout.item_notes, parent, false)
         return NotesHolder(view)
+    }
+
+    fun setNotes(notes: List<Note>) {
+        this.notes = notes
+        notifyDataSetChanged()
     }
 
     override fun getItemCount() = notes.size

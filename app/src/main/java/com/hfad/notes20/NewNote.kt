@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
 import com.jaredrummler.android.colorpicker.ColorShape
@@ -26,14 +28,14 @@ class NewNote : AppCompatActivity(), ColorPickerDialogListener{
     lateinit var switch: Switch
     lateinit var date: DatePicker
 
-   lateinit var database: NotesDatabase
+   lateinit var noteViewModel: NoteViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_note)
 
-        database = NotesDatabase.getInstance(this)!!
+        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
 
         button = findViewById(R.id.colorButton)
         title = findViewById(R.id.editTextTitle)
@@ -91,9 +93,7 @@ class NewNote : AppCompatActivity(), ColorPickerDialogListener{
             val date = String.format("%s.%s.%s",date.dayOfMonth, date.month+1, date.year)
 
             val note = Note(title, description, date, color)
-
-            database.notesDao().insertNote(note)
-
+            noteViewModel.insert(note)
             startActivity(intent)
         }
     }

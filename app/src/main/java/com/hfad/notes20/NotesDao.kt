@@ -1,5 +1,6 @@
 package com.hfad.notes20
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -9,7 +10,7 @@ import androidx.room.Query
 interface NotesDao {
 
     @Query("SELECT * FROM notes ORDER BY date")
-    fun getAllNotes():List<Note>
+    fun getAllNotes(): LiveData<List<Note>>
 
     @Insert
     fun insertNote(note:Note)

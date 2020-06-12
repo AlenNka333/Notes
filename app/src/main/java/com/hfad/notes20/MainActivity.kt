@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,19 +21,21 @@ class MainActivity : AppCompatActivity() {
         var notes: ArrayList<Note> = ArrayList()
         lateinit var database: NotesDatabase
         lateinit var adapter: NotesAdapter
+        lateinit var noteViewModel: NoteViewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerViewNotes)
-        database = NotesDatabase.getInstance(this)!!
 
-        getData()
+        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = NotesAdapter(notes)
+        adapter = NotesAdapter()
         recyclerView.adapter = adapter
+
+        getData()
 
         val itemTouchHelper = ItemTouchHelper(object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT.or(ItemTouchHelper.RIGHT)) {
@@ -50,10 +55,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun remove(position: Int) {
-        val note = notes.get(position)
-        database.notesDao().deleteNote(note)
-        getData()
-        adapter.notifyDataSetChanged()
+        val note = noteViewModel.getAllNotes()
+        note.value?.get(position)?.let { noteViewModel.deleteNote(it) }
     }
 
     fun addNote(view: View) {
@@ -62,8 +65,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getData(){
-        val notesDB = database.notesDao().getAllNotes()
-        notes.clear()
-        notes.addAll(notesDB)
+        noteViewModel.getAllNotes().observe(this,
+            Observer<List<Note>> { t ->
+                adapter.setNotes(t!!)
+            })
     }
 }
