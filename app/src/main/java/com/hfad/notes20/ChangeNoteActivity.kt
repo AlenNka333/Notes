@@ -30,8 +30,8 @@ class ChangeNoteActivity : AppCompatActivity(), ColorPickerDialogListener {
     lateinit var bundle: Bundle
     lateinit var noteId: String
 
+    lateinit var noteViewModel: NoteViewModel
 
-        lateinit var noteViewModel: NoteViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_note)
@@ -73,8 +73,6 @@ class ChangeNoteActivity : AppCompatActivity(), ColorPickerDialogListener {
         date.init(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH)
         ){ view, year, month, day ->
         }
-
-
 
     }
 
@@ -120,6 +118,12 @@ class ChangeNoteActivity : AppCompatActivity(), ColorPickerDialogListener {
             setResult(Activity.RESULT_OK, resultIntent)
             finish()
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        this.startActivity(Intent(applicationContext, MainActivity::class.java))
+        finish()
     }
 
 }

@@ -94,5 +94,11 @@ class NewNote : AppCompatActivity(), ColorPickerDialogListener{
             finish()
         }
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        this.startActivity(Intent(applicationContext, MainActivity::class.java))
+        finish()
+    }
 }
 
