@@ -1,18 +1,20 @@
 package com.hfad.notes20
 
-import android.graphics.Color
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.NonNull
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-class NotesAdapter: RecyclerView.Adapter<NotesAdapter.NotesHolder>() {
+
+class NotesAdapter(context: Context): RecyclerView.Adapter<NotesAdapter.NotesHolder>() {
 
     private var notes: List<Note> = ArrayList()
+    private var parent = context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesHolder {
         val view: View = LayoutInflater.from(parent.getContext())
@@ -34,23 +36,39 @@ class NotesAdapter: RecyclerView.Adapter<NotesAdapter.NotesHolder>() {
         holder.textViewDayOfWeek.text = (note.date)
         holder.textViewTitle.setBackgroundColor(note.priority)
 
+        holder.setActualPosition(position)
+        holder.setListeners(position)
+
     }
 
-    class NotesHolder(@NonNull itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class NotesHolder(@NonNull itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewTitle: TextView
         val textViewDescription: TextView
         val textViewDayOfWeek: TextView
 
+        private var nPosition: Int = 0
+
         init {
             textViewTitle = itemView.findViewById(R.id.textViewTitle)
             textViewDescription = itemView.findViewById(R.id.textViewDescription)
-            textViewDayOfWeek = itemView.findViewById(R.id.textViewDayOfWeek)
+            textViewDayOfWeek = itemView.findViewById(R.id.textViewDate)
+
+        }
+
+        fun setActualPosition(position :Int){
+            nPosition = position
+        }
+
+        fun setListeners(position: Int){
             itemView.setOnClickListener(object: View.OnClickListener{
                 override fun onClick(v: View?) {
-
+                    val intent = Intent(parent, ChangeNoteActivity::class.java)
+                    intent.putExtra("itemId", notes[nPosition].id)
+                    (parent as Activity).startActivityForResult(intent, MainActivity.UPDATE_NOTE_ACTIVITY_REQUEST_CODE)
                 }
-
             })
         }
     }
+
+
 }

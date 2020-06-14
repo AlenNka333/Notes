@@ -21,6 +21,14 @@ class NotesRepository(application: Application) {
         val insertNoteAsyncTask = InsertNoteAsyncTask(notesDao).execute(note)
     }
 
+    fun update(note: Note){
+        val updateNoteAsyncTask = UpdateNoteAsyncTask(notesDao).execute(note)
+    }
+
+    fun getNote(id: String): LiveData<Note>{
+        return GetNoteAsyncTask(notesDao).execute(id).get()
+    }
+
     fun deleteAllNotes(){
         DeleteAllNotesAsyncTask(notesDao).execute()
     }
@@ -37,6 +45,27 @@ class NotesRepository(application: Application) {
 
         override fun doInBackground(vararg params: Note?) {
             notesDao.insertNote(params[0]!!)
+        }
+
+    }
+
+    inner class UpdateNoteAsyncTask(notesDao: NotesDao): AsyncTask<Note, Unit, Unit>() {
+
+        val notesDao = notesDao
+
+        override fun doInBackground(vararg params: Note?) {
+            notesDao.update(params[0]!!)
+        }
+
+    }
+
+    inner class GetNoteAsyncTask(notesDao: NotesDao): AsyncTask<String, Unit, LiveData<Note>>(){
+
+        private val notesDao = notesDao
+
+        override fun doInBackground(vararg params: String?): LiveData<Note>? {
+            if(params.isNotEmpty()) return notesDao.getNote(params[0]!!)
+            return null
         }
 
     }

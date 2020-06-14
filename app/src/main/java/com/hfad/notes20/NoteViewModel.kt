@@ -14,12 +14,20 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
         repository.insert(note)
     }
 
+    fun update(note: Note){
+        repository.update(note)
+    }
+
     fun deleteAllNotes(){
         repository.deleteAllNotes()
     }
 
     fun deleteNote(note: Note){
         repository.deleteNote(note)
+    }
+
+    fun getNote(noteId: String): LiveData<Note>{
+        return repository.getNote(noteId)
     }
 
     fun getAllNotes(): LiveData<List<Note>> = repository.getAllNotes()

@@ -1,13 +1,11 @@
 package com.hfad.notes20
 
+import android.app.Activity
 import android.content.Intent
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,23 +14,22 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
+    lateinit var recyclerView: RecyclerView
     companion object {
-        var notes: ArrayList<Note> = ArrayList()
-        lateinit var database: NotesDatabase
         lateinit var adapter: NotesAdapter
         lateinit var noteViewModel: NoteViewModel
+        val UPDATE_NOTE_ACTIVITY_REQUEST_CODE = 2
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        recyclerView = findViewById(R.id.recyclerViewNotes)
-
+        recyclerView = this.findViewById(R.id.recyclerView)
         noteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
 
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = NotesAdapter()
+        recyclerView.layoutManager = LinearLayoutManager(this.applicationContext)
+        adapter = NotesAdapter(this)
         recyclerView.adapter = adapter
 
         getData()
@@ -69,5 +66,23 @@ class MainActivity : AppCompatActivity() {
             Observer<List<Note>> { t ->
                 adapter.setNotes(t!!)
             })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == UPDATE_NOTE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            val newNote = data?.getStringExtra("noteTitle")?.let {
+                Note(
+                    it,
+                    data.getStringExtra("noteDescription"),
+                    data.getStringExtra("noteDate"),
+                    data.getIntExtra("noteColor", 0)
+                    )
+            }
+            newNote?.id = data?.getStringExtra("noteId")?.toInt()!!
+            if (newNote != null) {
+                noteViewModel.update(newNote)
+            }
+        }
     }
 }
