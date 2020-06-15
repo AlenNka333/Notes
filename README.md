@@ -5,7 +5,7 @@ Notes saved in database, so, you never loose them. Delete function works by swip
 
 Used:
  - Kotlin
- - MVVM
+ - View Model
  - RecyclerView + CardView + ViewHolder
  - LiveData, LifeCycle, Room
  - ColorPicker, DatePicker
